@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ZeroBite — Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+
+    <!-- Navbar -->
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <!-- Leaf logo -->
+          <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+            <path d="M32 4C18 12 8 26 8 40c0 10 7 20 24 20s24-10 24-20C56 26 46 12 32 4z" fill="#009957"/>
+            <path d="M32 12c-6 12-6 28 0 40" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="brand-text">
+            <div class="brand-title">ZeroBite</div>
+            <div class="brand-sub">Share • Rescue • Care</div>
+          </div>
+        </div>
+
+        <nav class="main-nav">
+          <a class="nav-item" href="index.html">Home</a>
+          <a class="nav-item" href="donations.html">Donations</a>
+          <a class="nav-item" href="donate.html">Donate</a>
+          <a class="nav-item" href="volunteer.html">Volunteer</a>
+          <a class="nav-item active" href="analytics.html">Analytics</a>
+          <a class="nav-item" href="rewards.html">Rewards</a>
+        </nav>
+
+        <div class="top-actions">
+          <button class="btn ghost">Login</button>
+          <button class="btn primary">Get Started</button>
+        </div>
+      </div>
+    </header>
+
+
+  <section class="analytics-section container">
+  <!-- Header -->
+  <div class="analytics-header">
+    <h2>Analytics Dashboard</h2>
+    <div class="analytics-actions">
+      <select id="timeRangeSelect">
+        <option value="12m">Last 12 Months</option>
+        <option value="6m">Last 6 Months</option>
+        <option value="30d">Last 30 Days</option>
+      </select>
+      <button>Export</button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">12,847</div>
+      <div class="kpi-label">Total Meals Saved</div>
+      <div class="kpi-trend up">+23%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">1,927 kg</div>
+      <div class="kpi-label">CO₂ Reduced</div>
+      <div class="kpi-trend up">+18%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">342</div>
+      <div class="kpi-label">Active Donations</div>
+      <div class="kpi-trend down">-5%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">94%</div>
+      <div class="kpi-label">Community Impact</div>
+      <div class="kpi-trend up">+12%</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Meals Saved Over Time</h3>
+      <canvas id="mealsChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>CO₂ Reduction (kg)</h3>
+      <canvas id="co2Chart"></canvas>
+    </div>
+  </div>
+
+  <!-- Bottom Grid -->
+  <div class="analytics-bottom">
+    <!-- Donation Status -->
+    <div class="chart-card">
+      <h3>Donation Status</h3>
+      <canvas id="donationStatusChart"></canvas>
+    </div>
+
+    <!-- Food Categories -->
+    <div class="chart-card">
+      <h3>Food Categories</h3>
+      <ul class="donor-list">
+        <li class="donor-item"><span>Vegetables</span><span class="donor-tokens">450</span></li>
+        <li class="donor-item"><span>Fruits</span><span class="donor-tokens">380</span></li>
+        <li class="donor-item"><span>Bakery</span><span class="donor-tokens">320</span></li>
+        <li class="donor-item"><span>Dairy</span><span class="donor-tokens">280</span></li>
+        <li class="donor-item"><span>Prepared</span><span class="donor-tokens">180</span></li>
+      </ul>
+    </div>
+
+    <!-- Top Donors -->
+    <div class="chart-card">
+      <h3>Top Donors</h3>
+      <ul class="donor-list">
+        <li class="donor-item"><span class="donor-rank">#1 Green Grocers</span><span class="donor-tokens">1250</span></li>
+        <li class="donor-item"><span class="donor-rank">#2 Fresh Market Co</span><span class="donor-tokens">1180</span></li>
+        <li class="donor-item"><span class="donor-rank">#3 Community Kitchen</span><span class="donor-tokens">1050</span></li>
+        <li class="donor-item"><span class="donor-rank">#4 Healthy Bites</span><span class="donor-tokens">890</span></li>
+        <li class="donor-item"><span class="donor-rank">#5 Corner Bakery</span><span class="donor-tokens">780</span></li>
+        <li class="donor-item"><span class="donor-rank">#6 Orchard Fresh</span><span class="donor-tokens">690</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>© 2025 ZeroBite</div>
+        <div class="footer-links">
+          <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

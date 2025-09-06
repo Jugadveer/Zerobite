@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ZeroBite — Volunteer Pickup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+
+    <!-- Navbar -->
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+            <path d="M32 4C18 12 8 26 8 40c0 10 7 20 24 20s24-10 24-20C56 26 46 12 32 4z" fill="#009957"/>
+            <path d="M32 12c-6 12-6 28 0 40" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="brand-text">
+            <div class="brand-title">ZeroBite</div>
+            <div class="brand-sub">Share • Rescue • Care</div>
+          </div>
+        </div>
+
+        <nav class="main-nav">
+          <a class="nav-item" href="index.html">Home</a>
+          <a class="nav-item" href="donations.html">Donations</a>
+          <a class="nav-item" href="donate.html">Donate</a>
+          <a class="nav-item active" href="volunteer.html">Volunteer</a>
+          <a class="nav-item" href="analytics.html">Analytics</a>
+          <a class="nav-item" href="rewards.html">Rewards</a>
+        </nav>
+
+        <div class="top-actions">
+          <button class="btn ghost">Login</button>
+          <button class="btn primary">Get Started</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="page-hero">
+      <div class="container">
+        <h1 class="page-title">Volunteer Pickup</h1>
+        <p class="page-subtitle">Scan the QR code from a donor to confirm your pickup.</p>
+      </div>
+    </section>
+
+    <!-- Scanner -->
+    <section class="scanner-section">
+      <div class="container">
+        <div id="scannerPlaceholder" class="scanner-placeholder">
+          <!-- Camera Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="camera-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 7h2l2-3h10l2 3h2a2 2 0 012 2v9a2 2 0 01-2 2H3a2 2 0 01-2-2V9a2 2 0 012-2z" />
+            <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <p>Ready to scan a code</p>
+        </div>
+        <div id="scannerBox" class="scanner-box hidden">
+          <div id="preview"></div>
+        </div>
+        <p id="scanResult" class="scan-result">Waiting for scan...</p>
+        <div class="form-actions">
+          <button id="startBtn" class="btn primary">Start Scanning</button>
+          <button id="confirmBtn" class="btn ghost" disabled>Confirm Pickup</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>© 2025 ZeroBite</div>
+        <div class="footer-links">
+          <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

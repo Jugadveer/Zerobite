@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ZeroBite — Donate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+
+    <!-- Navbar -->
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <!-- Leaf logo -->
+          <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+            <path d="M32 4C18 12 8 26 8 40c0 10 7 20 24 20s24-10 24-20C56 26 46 12 32 4z" fill="#009957"/>
+            <path d="M32 12c-6 12-6 28 0 40" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="brand-text">
+            <div class="brand-title">ZeroBite</div>
+            <div class="brand-sub">Share • Rescue • Care</div>
+          </div>
+        </div>
+
+        <nav class="main-nav">
+          <a class="nav-item" href="index.html">Home</a>
+          <a class="nav-item" href="donations.html">Donations</a>
+          <a class="nav-item active" href="donate.html">Donate</a>
+          <a class="nav-item" href="volunteer.html">Volunteer</a>
+          <a class="nav-item" href="analytics.html">Analytics</a>
+          <a class="nav-item" href="rewards.html">Rewards</a>
+        </nav>
+
+        <div class="top-actions">
+          <button class="btn ghost">Login</button>
+          <button class="btn primary">Get Started</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="page-hero">
+      <div class="container">
+        <h1 class="page-title">Donate Food</h1>
+        <p class="page-subtitle">List surplus food so nearby people or NGOs can pick it up.</p>
+      </div>
+    </section>
+
+   <!-- Donation form -->
+<section class="donate-form-section">
+  <div class="container">
+    <form class="donate-form" id="donationForm">
+
+      <!-- Contact Details -->
+      <h2 class="form-section-title">Your Details</h2>
+      <div class="form-row inline">
+        <div>
+          <label for="donorName">Full Name</label>
+          <input type="text" id="donorName" name="donorName" placeholder="Enter your name" required>
+        </div>
+        <div>
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="9876543210" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+
+      <!-- Donation Details -->
+      <h2 class="form-section-title">Donation Details</h2>
+      <div class="form-row">
+        <label for="itemName">Item Name</label>
+        <input type="text" id="itemName" name="itemName" placeholder="e.g. Rice packets" required>
+      </div>
+
+      <div class="form-row">
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+          <option value="">Select category</option>
+          <option value="Cooked Meals">Cooked Meals</option>
+          <option value="Bakery">Bakery</option>
+          <option value="Produce">Produce</option>
+          <option value="Dairy">Dairy</option>
+          <option value="Packaged">Packaged</option>
+        </select>
+      </div>
+
+      <div class="form-row inline">
+        <div>
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity" placeholder="e.g. 20" required>
+        </div>
+        <div>
+          <label for="unit">Unit</label>
+          <select id="unit" name="unit" required>
+            <option value="portions">Portions</option>
+            <option value="kg">kg</option>
+            <option value="loaves">Loaves</option>
+            <option value="litres">Litres</option>
+            <option value="packs">Packs</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="pickupAddress">Pickup Address</label>
+        <textarea id="pickupAddress" name="pickupAddress" placeholder="Enter pickup location" rows="3" required></textarea>
+      </div>
+
+      <div class="form-row inline">
+        <div>
+          <label for="date">Date Available</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <div>
+          <label for="time">Time Available</label>
+          <input type="time" id="time" name="time" required>
+        </div>
+      </div>
+
+      <!-- Upload Images -->
+      <h2 class="form-section-title">Upload Images</h2>
+      <div class="form-row">
+        <label for="foodImage">Food Image</label>
+        <input type="file" id="foodImage" name="foodImage" accept="image/*" required>
+      </div>
+      <div class="form-row">
+        <label for="packagingImage">Packaging Image (optional)</label>
+        <input type="file" id="packagingImage" name="packagingImage" accept="image/*">
+      </div>
+
+      <!-- Notes -->
+      <div class="form-row">
+        <label for="notes">Notes (Optional)</label>
+        <textarea id="notes" name="notes" placeholder="Any extra details (e.g. contains nuts, keep refrigerated)" rows="3"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="reset" class="btn ghost">Cancel</button>
+        <button type="submit" class="btn primary">Submit Donation</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>© 2025 ZeroBite</div>
+        <div class="footer-links">
+          <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
