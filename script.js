@@ -238,3 +238,46 @@ if (ctxDonation) {
       });
     });
   }
+
+const loginBtn = document.querySelector('.btn.ghost');
+const signupBtn = document.querySelector('.btn.primary');
+const modal = document.getElementById('modalOverlay');
+const closeBtn = document.getElementById('modalClose');
+const loginTab = document.getElementById('loginTab');
+const signupTab = document.getElementById('signupTab');
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+
+function openModal(isSignup) {
+  modal.classList.add('active');
+  if (isSignup) {
+    signupTab.classList.add('active');
+    loginTab.classList.remove('active');
+    signupForm.classList.add('active');
+    loginForm.classList.remove('active');
+  } else {
+    loginTab.classList.add('active');
+    signupTab.classList.remove('active');
+    loginForm.classList.add('active');
+    signupForm.classList.remove('active');
+  }
+}
+
+loginBtn.addEventListener('click', () => openModal(false));
+signupBtn.addEventListener('click', () => openModal(true));
+closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
+
+loginTab.addEventListener('click', () => {
+  loginTab.classList.add('active');
+  signupTab.classList.remove('active');
+  loginForm.classList.add('active');
+  signupForm.classList.remove('active');
+});
+
+signupTab.addEventListener('click', () => {
+  signupTab.classList.add('active');
+  loginTab.classList.remove('active');
+  signupForm.classList.add('active');
+  loginForm.classList.remove('active');
+});

@@ -130,6 +130,31 @@
     </footer>
 
   </div>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div class="modal-tabs">
+        <button class="tab-link active" id="loginTab">Login</button>
+        <button class="tab-link" id="signupTab">Sign Up</button>
+      </div>
+      <div class="modal-content">
+        <form class="form active" id="loginForm">
+          <h2>Login</h2>
+          <input type="email" placeholder="Email" required>
+          <input type="password" placeholder="Password" required>
+          <button class="btn primary full">Login</button>
+        </form>
+        <form class="form" id="signupForm">
+          <h2>Sign Up</h2>
+          <input type="text" placeholder="Name" required>
+          <input type="email" placeholder="Email" required>
+          <input type="password" placeholder="Password" required>
+          <button class="btn primary full">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
   <script src="script.js"></script>
 </body>
 </html>
