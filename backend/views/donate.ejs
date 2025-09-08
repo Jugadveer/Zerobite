@@ -34,9 +34,16 @@
         </nav>
 
 
-        <div class="top-actions">
-          <button class="btn ghost">Login</button>
-          <button class="btn primary">Get Started</button>
+       <div class="top-actions">
+          <% if (user) { %>
+            <span class="welcome-user">Welcome, <%= user.name %></span>
+            <form method="post" action="/zerobite/logout" style="display:inline;">
+              <button class="btn ghost welcome-user">Logout</button>
+            </form>
+            <% } else { %>
+              <button class="btn ghost" id="loginButton">Login</button>
+              <button class="btn primary" id="getStartedButton">Get Started</button>
+              <% } %>
         </div>
       </div>
     </header>

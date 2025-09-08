@@ -1063,3 +1063,31 @@ BOOTSTRAP RESPONSIVE */
   width: 90%;
   max-width: 400px;
 }
+
+
+
+
+/* css for welcome user when logged in */
+
+/* Welcome user styled like a button for consistency */
+.welcome-user {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--accent);
+  background-color: transparent;
+  border: 1px solid var(--accent);
+  cursor: default; /* not clickable */
+  user-select: none;
+  transition: 0.2s;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+}
+
+/* Optional: subtle hover effect to match buttons */
+.welcome-user:hover {
+  background-color: var(--accent);
+  color: #fff;
+}
