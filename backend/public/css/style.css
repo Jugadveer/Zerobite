@@ -1217,3 +1217,25 @@ PIE CHART IN ANALYTICS PAGE  */
   margin: 0 auto;
   display: block;
 }
+
+
+
+.mock-phone img {
+  width: 300px;       /* Fixed width as needed */
+  height: 600px;      /* Fixed height as needed */
+  object-fit: cover;  /* Ensures image fills container, cropping if needed */
+  border-radius: 12px; /* Optional: rounded corners to match design */
+  display: block;
+}
+
+
+
+
+
+
+
+
+
+
+
+
