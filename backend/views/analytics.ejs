@@ -14,7 +14,6 @@
     <header class="topbar">
       <div class="container">
         <div class="brand">
-          <!-- Leaf logo -->
           <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
             <path d="M32 4C18 12 8 26 8 40c0 10 7 20 24 20s24-10 24-20C56 26 46 12 32 4z" fill="#009957"/>
             <path d="M32 12c-6 12-6 28 0 40" stroke="white" stroke-width="3" stroke-linecap="round"/>
@@ -24,116 +23,108 @@
             <div class="brand-sub">Share • Rescue • Care</div>
           </div>
         </div>
-
-           <nav class="main-nav">
+        <nav class="main-nav">
           <a class="nav-item" href="/zerobite">Home</a>
-          <a class="nav-item active" href="/zerobite/donations">Donations</a>
+          <a class="nav-item" href="/zerobite/donations">Donations</a>
           <a class="nav-item" href="/zerobite/donate">Donate</a>
           <a class="nav-item" href="/zerobite/volunteer">Volunteer</a>
-          <a class="nav-item" href="/zerobite/analytics">Analytics</a>
+          <a class="nav-item active" href="/zerobite/analytics">Analytics</a>
           <a class="nav-item" href="/zerobite/rewards">Rewards</a>
         </nav>
-
-
         <div class="top-actions">
           <% if (user) { %>
             <span class="welcome-user">Welcome, <%= user.name %></span>
             <form method="post" action="/zerobite/logout" style="display:inline;">
               <button class="btn ghost welcome-user">Logout</button>
             </form>
-            <% } else { %>
-              <button class="btn ghost" id="loginButton">Login</button>
-              <button class="btn primary" id="getStartedButton">Get Started</button>
-              <% } %>
+          <% } else { %>
+            <button class="btn ghost" id="loginButton">Login</button>
+            <button class="btn primary" id="getStartedButton">Get Started</button>
+          <% } %>
         </div>
       </div>
     </header>
 
+    <section class="analytics-section container" style="margin-top: 50px;">
+      <!-- Header -->
+      <div class="analytics-header">
+        <h2>Analytics Dashboard</h2>
+        <div class="analytics-actions">
+          <select id="timeRangeSelect">
+            <option value="12m">Last 12 Months</option>
+            <option value="6m">Last 6 Months</option>
+            <option value="30d">Last 30 Days</option>
+          </select>
+          <button>Export</button>
+        </div>
+      </div>
 
-  <section class="analytics-section container">
-  <!-- Header -->
-  <div class="analytics-header">
-    <h2>Analytics Dashboard</h2>
-    <div class="analytics-actions">
-      <select id="timeRangeSelect">
-        <option value="12m">Last 12 Months</option>
-        <option value="6m">Last 6 Months</option>
-        <option value="30d">Last 30 Days</option>
-      </select>
-      <button>Export</button>
-    </div>
-  </div>
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value"><%= analytics?.mealsSaved?.toLocaleString() || 0 %></div>
+          <div class="kpi-label">Total Meals Saved</div>
+        <!-- <div class="kpi-trend up">+23%</div> -->
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value"><%= analytics?.co2ReducedKg?.toFixed(2) || '0.00' %> kg</div>
+          <div class="kpi-label">CO₂ Reduced</div>
+          <!-- <div class="kpi-trend up">+18%</div> -->
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value"><%= analytics?.activeDonationsCount || 0 %></div>
+          <div class="kpi-label">Active Donations</div>
+          <!-- <div class="kpi-trend down">-5%</div> -->
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value"><%= analytics?.communityImpactPercent?.toFixed(4) || '0.0000' %></div>
 
-  <!-- KPI Cards -->
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-value">12,847</div>
-      <div class="kpi-label">Total Meals Saved</div>
-      <div class="kpi-trend up">+23%</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-value">1,927 kg</div>
-      <div class="kpi-label">CO₂ Reduced</div>
-      <div class="kpi-trend up">+18%</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-value">342</div>
-      <div class="kpi-label">Active Donations</div>
-      <div class="kpi-trend down">-5%</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-value">94%</div>
-      <div class="kpi-label">Community Impact</div>
-      <div class="kpi-trend up">+12%</div>
-    </div>
-  </div>
+          <div class="kpi-label">Community Impact</div>
+          <!-- <div class="kpi-trend up">+12%</div> -->
+        </div>
+      </div>
 
-  <!-- Charts -->
-  <div class="charts-grid">
-    <div class="chart-card">
-      <h3>Meals Saved Over Time</h3>
-      <canvas id="mealsChart"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>CO₂ Reduction (kg)</h3>
-      <canvas id="co2Chart"></canvas>
-    </div>
-  </div>
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Meals Saved Over Time</h3>
+          <canvas id="mealsChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>CO₂ Reduction (kg)</h3>
+          <canvas id="co2Chart"></canvas>
+        </div>
+      </div>
 
-  <!-- Bottom Grid -->
-  <div class="analytics-bottom">
-    <!-- Donation Status -->
-    <div class="chart-card">
-      <h3>Donation Status</h3>
-      <canvas id="donationStatusChart"></canvas>
-    </div>
+      <!-- Bottom Grid -->
+      <div class="analytics-bottom">
+        <!-- Donation Status -->
+        <div class="chart-card piechart">
+          <h3>Donation Status</h3>
+          <canvas id="donationStatusChart" class="piecanvas"></canvas>
+        </div>
 
-    <!-- Food Categories -->
-    <div class="chart-card">
-      <h3>Food Categories</h3>
-      <ul class="donor-list">
-        <li class="donor-item"><span>Vegetables</span><span class="donor-tokens">450</span></li>
-        <li class="donor-item"><span>Fruits</span><span class="donor-tokens">380</span></li>
-        <li class="donor-item"><span>Bakery</span><span class="donor-tokens">320</span></li>
-        <li class="donor-item"><span>Dairy</span><span class="donor-tokens">280</span></li>
-        <li class="donor-item"><span>Prepared</span><span class="donor-tokens">180</span></li>
-      </ul>
-    </div>
+        <!-- Food Categories -->
+        <div class="chart-card">
+          <h3>Food Categories</h3>
+          <ul class="donor-list" id="foodCategoryList">
+            <% (analytics?.foodCategoryCounts || []).forEach(fc => { %>
+              <li class="donor-item"><span><%= fc.category %></span><span class="donor-tokens"><%= fc.count %></span></li>
+            <% }) %>
+          </ul>
+        </div>
 
-    <!-- Top Donors -->
-    <div class="chart-card">
-      <h3>Top Donors</h3>
-      <ul class="donor-list">
-        <li class="donor-item"><span class="donor-rank">#1 Green Grocers</span><span class="donor-tokens">1250</span></li>
-        <li class="donor-item"><span class="donor-rank">#2 Fresh Market Co</span><span class="donor-tokens">1180</span></li>
-        <li class="donor-item"><span class="donor-rank">#3 Community Kitchen</span><span class="donor-tokens">1050</span></li>
-        <li class="donor-item"><span class="donor-rank">#4 Healthy Bites</span><span class="donor-tokens">890</span></li>
-        <li class="donor-item"><span class="donor-rank">#5 Corner Bakery</span><span class="donor-tokens">780</span></li>
-        <li class="donor-item"><span class="donor-rank">#6 Orchard Fresh</span><span class="donor-tokens">690</span></li>
-      </ul>
-    </div>
-  </div>
-</section>
+        <!-- Top Donors -->
+        <div class="chart-card">
+          <h3>Top Donors</h3>
+          <ul class="donor-list" id="topDonorsList">
+            <% (analytics?.topDonors || []).forEach(donor => { %>
+              <li class="donor-item"><span class="donor-rank"><%= donor.donorName %></span><span class="donor-tokens"><%= donor.tokens %></span></li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    </section>
 
     <!-- Footer -->
     <footer class="site-footer">
@@ -146,7 +137,65 @@
     </footer>
 
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="js/script.js"></script>
+  <script>
+    // Prepare chart data from backend-injected analytics object
+    const analytics = JSON.parse('<%- JSON.stringify(analytics || {}) %>');
+
+    // Meals Saved Over Time - placeholder data (replace with backend timeline data if available)
+    const mealsChartCtx = document.getElementById('mealsChart').getContext('2d');
+    const mealsChart = new Chart(mealsChartCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], // Replace with real time labels if available
+        datasets: [{
+          label: 'Meals Saved',
+          data: [300, 450, 500, 600, analytics.mealsSaved || 0],
+          borderColor: '#009957',
+          backgroundColor: 'rgba(0, 153, 87, 0.2)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: { responsive: true }
+    });
+
+    // CO2 Reduction by Food Category (bar chart)
+    const co2ChartCtx = document.getElementById('co2Chart').getContext('2d');
+    const foodCategories = analytics.foodCategoryCounts || [];
+    const co2Chart = new Chart(co2ChartCtx, {
+      type: 'bar',
+      data: {
+        labels: foodCategories.map(fc => fc.category),
+        datasets: [{
+          label: 'Donations Count',
+          data: foodCategories.map(fc => fc.count),
+          backgroundColor: '#009957'
+        }]
+      },
+      options: { responsive: true }
+    });
+
+    // Donation Status Pie Chart
+    const statusChartCtx = document.getElementById('donationStatusChart').getContext('2d');
+    const donationStatus = analytics.donationStatus || { pending: 0, completed: 0, cancelled: 0 };
+    const statusChart = new Chart(statusChartCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Pending', 'Completed', 'Cancelled'],
+        datasets: [{
+          data: [
+            donationStatus.pending || 0,
+            donationStatus.completed || 0,
+            donationStatus.cancelled || 0
+          ],
+          backgroundColor: ['#f0ad4e', '#5cb85c', '#d9534f']
+        }]
+      },
+      options: { responsive: true }
+    });
+  </script>
 </body>
 </html>
+

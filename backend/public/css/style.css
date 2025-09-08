@@ -1091,3 +1091,129 @@ BOOTSTRAP RESPONSIVE */
   background-color: var(--accent);
   color: #fff;
 }
+
+
+
+/* 
+DONATION CARD DETAILS */
+
+
+.donation-card {
+  display: grid;
+  grid-template-columns: 110px 1fr 160px; /* reduce column width for compactness */
+  gap: 18px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f4f4f4;
+  border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(0,153,87,0.07);
+  padding: 18px;
+  margin-bottom: 28px;
+}
+
+.card-left .thumb {
+  width: 90px;
+  height: 90px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.card-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.item-title {
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+
+.tag {
+  font-size: 1rem;
+  padding: 3px 14px;
+  border-radius: 999px;
+  background: #F3FAF4;
+  color: #009957;
+  border: 1px solid #CAE8D1;
+  margin-right: 6px;
+  margin-bottom: 2px;
+}
+.tag.green {
+  background: #D8F5E1;
+  color: #39B76A;
+  border-color: #A3EBC5;
+}
+.meta-row, .facts-row { gap: 7px; font-size: 1rem; color: #444; }
+
+.card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pickup-label {
+  font-weight: 700;
+  color: #39B76A;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.card-right .btn.primary, 
+.card-right .btn.ghost {
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 8px 0;
+}
+
+.card-right .expires {
+  color: #666;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+/* Responsive tweak */
+@media (max-width: 700px) {
+  .donation-card {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+  .card-right { align-items: start; width: 100%; }
+}
+
+
+/* 
+PIE CHART IN ANALYTICS PAGE  */
+
+.piechart {
+  /* Ensures the card has padding and doesn't overflow */
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  min-width: 250px;
+  height: 350px;
+  padding: 24px 16px 16px 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 14px rgba(30,30,30,0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.piecanvas {
+  /* Limit the canvas size so it never overflows the card */
+  width: 100% !important;
+  max-width: 300px;
+  max-height: 220px;
+  height: 220px !important;
+  margin: 0 auto;
+  display: block;
+}

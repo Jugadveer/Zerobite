@@ -7,25 +7,35 @@ const session = require('express-session');
 const User = require('./models/User');
 const Donation = require('./models/Donation');
 const donationRoutes = require('./routes/donationRoutes');
-const analytic = require('./models/Analytics');
+const Analytics = require('./models/Analytics');
 
-
-
+const MongoStore = require('connect-mongo');
+const { updateUserAnalytics } = require('./utils/updateAnalytics');
 
 app.set("views",path.join(__dirname,"/views"));
 app.set("view engine","ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
-app.use(session({
-  secret: 'zerobite',
-  resave: false,
-  saveUninitialized: false
-}));
+// app.use(session({
+//   secret: 'zerobite',
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: { maxAge: 24 * 60 * 60 * 1000 }
+// }));
 app.use(donationRoutes);
 
 
-
+app.use(session({
+  secret: 'zerobite',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ 
+    mongoUrl: 'mongodb://127.0.0.1:27017/zerobite',  // your existing DB
+    collectionName: 'sessions'   // specify collection name for sessions
+  }),
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+}));
 main()
 
 .then(() => { console.log("Connected to MongoDB");
@@ -110,9 +120,20 @@ app.post('/zerobite/login', async (req, res) => {
 
     
 
-app.get("/zerobite/donations",(req,res)=>{
-    res.render("donations.ejs",{ user: req.session.user || null });
-})
+app.get("/zerobite/donations", async (req, res) => {
+  try {
+    
+    const donations = await Donation.find()
+      .populate('donor') 
+      .sort({ createdAt: -1 });
+
+    res.render("donations.ejs", { user: req.session.user || null, donations });
+  } catch (error) {
+    console.error("Error fetching donations:", error);
+    res.status(500).send("Server error");
+  }
+});
+
 
 app.get("/zerobite/donate",(req,res)=>{
     res.render("donate.ejs",{ user: req.session.user || null });
@@ -128,9 +149,26 @@ app.get("/zerobite/volunteer",(req,res)=>{
 })
 
 
-app.get("/zerobite/analytics",(req,res)=>{
-    res.render("analytics.ejs",{ user: req.session.user || null });
-})
+
+
+app.get('/zerobite/analytics', async (req, res) => {
+  if (!req.session?.user) {
+    return res.redirect('/zerobite/login'); // or wherever your login is
+  }
+
+  try {
+    await updateUserAnalytics(req.session.user.id);
+
+    // Fetch updated analytics document for rendering
+    const currentPeriod = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const analyticsData = await Analytics.findOne({ user: req.session.user.id, date: currentPeriod });
+    
+    res.render('analytics.ejs', { user: req.session.user, analytics: analyticsData });
+  } catch (error) {
+    console.error('Error updating analytics:', error);
+    res.status(500).send('Error loading analytics');
+  }
+});
 
 
 
