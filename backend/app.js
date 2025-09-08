@@ -6,7 +6,7 @@ const methodOverride = require('method-override');
 const session = require('express-session');
 const User = require('./models/User');
 const Donation = require('./models/Donation');
-
+const donationRoutes = require('./routes/donationRoutes');
 const analytic = require('./models/Analytics');
 
 
@@ -22,6 +22,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+app.use(donationRoutes);
 
 
 
