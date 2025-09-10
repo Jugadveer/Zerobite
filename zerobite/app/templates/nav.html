@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zerobite Navbar</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap">
+  <style>
+    :root {
+      --accent: #009957;
+      --text: #222;
+      --muted: #666;
+      --bg: #fff;
+      --bg-alt: #f9f9f9;
+      --nav-height: 70px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: var(--bg);
+    }
+
+    /* Navbar */
+ .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-height);
+  background: var(--bg);
+  box-shadow: 0 2px 8px rgba(0,153,87,0.04);
+  padding: 0 32px;
+  position: relative;
+  z-index: 100;
+}
+.navbar-center {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 auto;  /* centers it */
+}
+    /* Left side */
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+    }
+
+    .navbar-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .fade-in-container {
+      display: flex;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: -2px;
+    }
+
+    .fade-in-container span {
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+    .fade-in-container span:nth-child(1) { animation-delay: 0.2s; }
+    .fade-in-container span:nth-child(2) { animation-delay: 0.7s; }
+    .fade-in-container span:nth-child(3) { animation-delay: 1.2s; }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Right side */
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 15px;
+      position: relative;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+      stroke: var(--accent);
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+      background: var(--bg-alt);
+      color: var(--accent);
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      bottom: 4px;
+      left: 14px;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: calc(100% - 28px);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 7px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.2s;
+      margin-left: 4px;
+    }
+
+    .login-btn {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .login-btn:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .get-started-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .get-started-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Mobile toggle */
+    .navbar-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 16px;
+    }
+
+    .navbar-toggle span {
+      width: 26px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      display: block;
+      transition: 0.3s;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .navbar-right {
+        position: absolute;
+        top: var(--nav-height);
+        right: 0;
+        background: var(--bg);
+        flex-direction: column;
+        align-items: flex-start;
+        width: 220px;
+        box-shadow: 0 8px 24px rgba(0,153,87,0.08);
+        padding: 18px 0;
+        gap: 0;
+        display: none;
+      }
+      .navbar-right.open {
+        display: flex;
+      }
+      .navbar-toggle {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .brand-logo { width: 32px; height: 32px; }
+      .brand-title { font-size: 18px; }
+      .navbar { height: 56px; padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <!-- Left -->
+  <div class="navbar-left">
+    <!-- Logo -->
+    <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <path d="M32 4C18 12 8 26 8 40c0 10 7 20 24 20s24-10 24-20C56 26 46 12 32 4z" fill="#009957" />
+      <path d="M32 12c-6 12-6 28 0 40" stroke="white" stroke-width="3" stroke-linecap="round" />
+    </svg>
+    <div class="navbar-brand">
+      <span class="brand-title">ZeroBite</span>
+      <div class="fade-in-container">
+        <span>Share</span>
+        <span>Rescue</span>
+        <span>Care</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Center -->
+  <div class="navbar-center">
+    <a href="#" class="nav-link active">
+      <span class="nav-icon">
+        <!-- Home -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 12l9-9 9 9M4 10v10h16V10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      Home
+    </a>
+    <a href="#" class="nav-link">
+      <span class="nav-icon">
+        <!-- Donations (Map Pin) -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 21s-6-4.35-6-10a6 6 0 1112 0c0 5.65-6 10-6 10z" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="11" r="3"/>
+        </svg>
+      </span>
+      Donations
+    </a>
+    <a href="#" class="nav-link">
+      <span class="nav-icon">
+        <!-- Donate (Heart) -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" 
+     viewBox="0 0 24 24" width="24" height="24">
+  <path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z" 
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+      </span>
+      Donate
+    </a>
+    <a href="#" class="nav-link">
+      <span class="nav-icon">
+        <!-- Volunteer (QR Scanner) -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 7V5a2 2 0 012-2h2M21 7V5a2 2 0 00-2-2h-2M3 17v2a2 2 0 002 2h2M21 17v2a2 2 0 01-2 2h-2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="7" y="7" width="3" height="3" />
+          <rect x="14" y="7" width="3" height="3" />
+          <rect x="7" y="14" width="3" height="3" />
+          <rect x="14" y="14" width="3" height="3" />
+        </svg>
+      </span>
+      Volunteer
+    </a>
+    <a href="#" class="nav-link">
+      <span class="nav-icon">
+        <!-- Analytics (Bar Chart) -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="4" y1="21" x2="4" y2="14"/>
+          <line x1="12" y1="21" x2="12" y2="8"/>
+          <line x1="20" y1="21" x2="20" y2="4"/>
+        </svg>
+      </span>
+      Analytics
+    </a>
+    <a href="#" class="nav-link">
+      <span class="nav-icon">
+        <!-- Rewards (Gift) -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" 
+     viewBox="0 0 24 24" width="24" height="24">
+  <rect x="3" y="8" width="18" height="13" rx="2" ry="2"/>
+  <path d="M12 8v13M3 12h18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12 8a3 3 0 11-3-3c0 1.66 3 3 3 3zm0 0a3 3 0 103-3c0 1.66-3 3-3 3z" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+      </span>
+      Rewards
+    </a>
+  </div>
+
+  <!-- Right -->
+  <div class="navbar-right">
+    <button class="btn login-btn">Login</button>
+    <button class="btn get-started-btn">Get Started</button>
+  </div>
+
+  <!-- Toggle -->
+  <button class="navbar-toggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+
+  <script>
+    // Navbar mobile toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggle = document.querySelector('.navbar-toggle');
+      const navRight = document.querySelector('.navbar-right');
+      toggle.addEventListener('click', function() {
+        navRight.classList.toggle('open');
+      });
+      // Close on link click (mobile)
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 900) navRight.classList.remove('open');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
