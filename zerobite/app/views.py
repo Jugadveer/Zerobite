@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from .models import CustomUser, Donation
+from .models import CustomUser, Donation, UserProfile
 
 
 from django.http import JsonResponse
@@ -71,7 +71,38 @@ def login_view(request):
 
 
 def rewards(request):
-    return render(request, "rewards.html")
+    if request.user.is_authenticated:
+        # Get or create user profile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Calculate rewards data
+        tokens = profile.tokens
+        level = profile.level
+        streak = profile.streak
+        tokens_to_next = profile.get_tokens_to_next_level()
+        progress_percentage = profile.get_level_progress_percentage()
+        
+        context = {
+            'tokens': tokens,
+            'level': level,
+            'streak': streak,
+            'tokens_to_next': tokens_to_next,
+            'progress_percentage': progress_percentage,
+            'total_donations': profile.total_donations,
+            'total_pickups': profile.total_pickups,
+        }
+    else:
+        context = {
+            'tokens': 0,
+            'level': 1,
+            'streak': 0,
+            'tokens_to_next': 100,
+            'progress_percentage': 0,
+            'total_donations': 0,
+            'total_pickups': 0,
+        }
+    
+    return render(request, "rewards.html", context)
 
 # views.py
 from django.shortcuts import get_object_or_404, redirect, render
@@ -102,7 +133,7 @@ from .models import Donation
 def dashboard(request):
     if not request.user.is_authenticated:
         # Redirect to home and show login modal
-        return redirect('home?login_required=true')
+        return redirect('home')
     
     donations = Donation.objects.filter(donor=request.user)
     total = donations.count()
@@ -145,7 +176,7 @@ def pickup_donation_volunteer(request, donation_id):
 def volunteer_dashboard(request):
     if not request.user.is_authenticated:
         # Redirect to home and show login modal
-        return redirect('home?login_required=true')
+        return redirect('home')
     
     assigned_donations = Donation.objects.filter(volunteer=request.user).order_by("-created_at")
     return render(request, "volunteer.html", {
@@ -163,7 +194,39 @@ def verify_pickup(request, donation_id):
     donation.status = "completed"
     donation.save()
 
+    # Award tokens for successful pickup
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    profile.add_tokens(75, "Successful pickup")  # 75 tokens for completing a pickup
+    profile.total_pickups += 1
+    profile.update_streak()
+    profile.save()
+
     return JsonResponse({"success": True, "message": "Donation verified and completed!"})
+
+
+@login_required
+def check_donation_status(request, donation_id):
+    """Check if a donation has been scanned/picked up"""
+    try:
+        donation = get_object_or_404(Donation, id=donation_id)
+        
+        # Only show as scanned if it's completed (actually picked up)
+        # Reserved status means it's assigned but not yet picked up
+        is_scanned = donation.status == 'completed'
+        
+        return JsonResponse({
+            'success': True,
+            'is_scanned': is_scanned,
+            'status': donation.status,
+            'scanned_by': donation.volunteer.username if donation.volunteer else None,
+            'is_reserved': donation.status == 'reserved',
+            'reserved_by': donation.volunteer.username if donation.volunteer and donation.status == 'reserved' else None
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })
 
 
 
@@ -221,6 +284,10 @@ import qrcode
 def api_create_donation(request):
     if request.method == 'POST':
         try:
+            print("Received donation form submission")
+            print("POST data:", request.POST)
+            print("FILES data:", request.FILES)
+            
             # Get form data
             phone = request.POST.get('phone')
             email = request.POST.get('email')
@@ -233,6 +300,8 @@ def api_create_donation(request):
             date = request.POST.get('date')
             time = request.POST.get('time')
             notes = request.POST.get('notes')
+            
+            print(f"Form data - Phone: {phone}, Email: {email}, Item: {item_name}")
 
             # Handle file uploads
             food_image = request.FILES.get('foodImage')
@@ -254,6 +323,20 @@ def api_create_donation(request):
                 user.phone = phone
                 user.save(update_fields=['phone'])
 
+            # Validate required fields
+            if not all([phone, email, item_name, category, quantity, unit, pickup_address, date, time]):
+                return JsonResponse({'success': False, 'message': 'Missing required fields'})
+            
+            # Validate category is in choices
+            valid_categories = [choice[0] for choice in Donation.FOOD_TYPE_CHOICES]
+            if category not in valid_categories:
+                return JsonResponse({'success': False, 'message': f'Invalid category: {category}'})
+            
+            # Validate unit is in choices
+            valid_units = [choice[0] for choice in Donation.UNIT_CHOICES]
+            if unit not in valid_units:
+                return JsonResponse({'success': False, 'message': f'Invalid unit: {unit}'})
+
             # Create donation
             donation = Donation.objects.create(
                 donor=user,
@@ -269,6 +352,8 @@ def api_create_donation(request):
                 notes=notes,
                 status='pending'
             )
+            
+            print(f"Created donation: {donation.id} for user: {user.email}")
 
             # Handle file uploads
             if food_image:
@@ -278,9 +363,19 @@ def api_create_donation(request):
 
             donation.save()  # QR code will be auto-generated by save()
 
+            # Award tokens for donation
+            profile, created = UserProfile.objects.get_or_create(user=user)
+            profile.add_tokens(50, "Donation created")  # 50 tokens for creating a donation
+            profile.total_donations += 1
+            profile.update_streak()
+            profile.save()
+
             return JsonResponse({'success': True, 'message': 'Donation submitted successfully!'})
 
         except Exception as e:
+            print(f"Error creating donation: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
 
     return JsonResponse({'success': False, 'message': 'Method not allowed'})
@@ -291,7 +386,7 @@ def api_create_donation(request):
 def donate(request):
     if not request.user.is_authenticated:
         # Redirect to home and show login modal
-        return redirect('home?login_required=true')
+        return redirect('home')
     return render(request, 'donate.html')
 
 

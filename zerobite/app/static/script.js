@@ -31,8 +31,7 @@ function updateAllCharts(range) {
 document.addEventListener('DOMContentLoaded', () => {
   // --- Single entry point for all DOM-ready initializations ---
 
-  // 1. Check login state on page load
-  checkLoginState();
+  // 1. Login state is handled by Django templates - no need to check
 
   // 2. Set active navigation link based on current URL
   const navLinks = document.querySelectorAll('.nav-item');
@@ -51,22 +50,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Donation form submission
   const form = document.getElementById('donationForm');
   if (form) {
+    console.log("Donation form found, adding event listener");
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.log("Form submitted, preventing default");
+      
       const formData = new FormData(form);
       
+      // Debug: Log form data
+      console.log("Form data entries:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      
       try {
+        console.log("Sending request to /api/create-donation/");
         const response = await fetch('/api/create-donation/', {
           method: 'POST',
           body: formData
         });
         
+        console.log("Response status:", response.status);
+        console.log("Response ok:", response.ok);
+        
         if (response.ok) {
           const result = await response.json();
+          console.log("Success response:", result);
           alert("Donation submitted successfully!");
           form.reset();
         } else {
           const error = await response.json();
+          console.log("Error response:", error);
           alert("Error: " + (error.message || "Failed to submit donation"));
         }
       } catch (error) {
@@ -74,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Error: Failed to submit donation. Please try again.");
       }
     });
+  } else {
+    console.log("Donation form not found!");
   }
 
   // 3. Volunteer form submission (if exists)
@@ -170,9 +186,21 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('click', (e) => {
   // Handle pickup button clicks on the donations page
   if (e.target.matches('.pickup-btn')) {
-    const id = e.target.getAttribute('data-id');
-    // TODO: call your backend reservation API here
-    alert(Pickup reserved (demo) for item #${id});
+    // Check if user is authenticated
+    const isAuthenticated = document.querySelector('.welcome-user') !== null;
+    
+    if (!isAuthenticated) {
+      // User not authenticated, open login modal
+      if (typeof openLoginModal === 'function') {
+        openLoginModal();
+      } else {
+        alert('Please login to access this feature');
+      }
+      return;
+    }
+    
+    // User is authenticated, let the donation page handle the modal
+    // The donation page has its own pickup button handler
   }
 });
 
@@ -274,154 +302,35 @@ if (ctxDonation) {
     });
   }
 
+// Updated modal system to work with new base.html modals
 const loginBtn = document.querySelector('.btn.ghost');
 const signupBtn = document.querySelector('.btn.primary');
-const modal = document.getElementById('modalOverlay');
-const closeBtn = document.getElementById('modalClose');
-const loginTab = document.getElementById('loginTab');
-const signupTab = document.getElementById('signupTab');
-const loginForm = document.getElementById('loginForm');
-const signupForm = document.getElementById('signupForm');
 
-function openModal(isSignup) {
-  modal.classList.add('active');
-  if (isSignup) {
-    signupTab.classList.add('active');
-    loginTab.classList.remove('active');
-    signupForm.classList.add('active');
-    loginForm.classList.remove('active');
-  } else {
-    loginTab.classList.add('active');
-    signupTab.classList.remove('active');
-    loginForm.classList.add('active');
-    signupForm.classList.remove('active');
-  }
+// Only add event listeners if buttons exist and we're not already using the new modal system
+if (loginBtn && !loginBtn.onclick) {
+  loginBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (typeof openLoginModal === 'function') {
+      openLoginModal();
+    }
+  });
 }
 
-loginBtn.addEventListener('click', () => openModal(false));
-signupBtn.addEventListener('click', () => openModal(true));
-closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
-
-loginTab.addEventListener('click', () => {
-  loginTab.classList.add('active');
-  signupTab.classList.remove('active');
-  loginForm.classList.add('active');
-  signupForm.classList.remove('active');
-});
-
-signupTab.addEventListener('click', () => {
-  signupTab.classList.add('active');
-  loginTab.classList.remove('active');
-  signupForm.classList.add('active');
-  loginForm.classList.remove('active');
-});
-
-// Login form submission
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const formData = new FormData(loginForm);
-  const email = formData.get('email') || loginForm.querySelector('input[type="email"]').value;
-  const password = formData.get('password') || loginForm.querySelector('input[type="password"]').value;
-  
-  try {
-    const response = await fetch('/api/login/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password })
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      alert("Login successful!");
-      modal.classList.remove('active');
-      // Update UI to show logged in state
-      updateLoginState(true, result.user);
-    } else {
-      const error = await response.json();
-      alert("Error: " + (error.message || "Login failed"));
+if (signupBtn && !signupBtn.onclick) {
+  signupBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (typeof openSignupModal === 'function') {
+      openSignupModal();
     }
-  } catch (error) {
-    console.error("Error logging in:", error);
-    alert("Error: Failed to login. Please try again.");
-  }
-});
-
-// Signup form submission
-signupForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const formData = new FormData(signupForm);
-  const name = formData.get('name') || signupForm.querySelector('input[placeholder="Name"]').value;
-  const email = formData.get('email') || signupForm.querySelector('input[type="email"]').value;
-  const password = formData.get('password') || signupForm.querySelector('input[type="password"]').value;
-  
-  try {
-    const response = await fetch('/api/signup/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password })
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      alert("Account created successfully!");
-      modal.classList.remove('active');
-      // Update UI to show logged in state
-      updateLoginState(true, result.user);
-    } else {
-      const error = await response.json();
-      alert("Error: " + (error.message || "Signup failed"));
-    }
-  } catch (error) {
-    console.error("Error signing up:", error);
-    alert("Error: Failed to create account. Please try again.");
-  }
-});
-
-// Function to check login state on page load
-async function checkLoginState() {
-  try {
-    const response = await fetch('/api/analytics/', {
-      method: 'GET',
-      credentials: 'same-origin'
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      if (result.success) {
-        // User is logged in, update UI
-        updateLoginState(true, { name: 'User' });
-      } else {
-        updateLoginState(false);
-      }
-    } else {
-      updateLoginState(false);
-    }
-  } catch (error) {
-    console.log('Not logged in');
-    updateLoginState(false);
-  }
+  });
 }
+// Old modal system removed - now using base.html modals
 
-// Function to update login state in UI
-function updateLoginState(isLoggedIn, user = null) {
-  const loginBtn = document.querySelector('.btn.ghost');
-  const signupBtn = document.querySelector('.btn.primary');
-  
-  if (isLoggedIn && user) {
-    loginBtn.textContent = user.name || 'Profile';
-    signupBtn.textContent = 'Logout';
-    signupBtn.onclick = () => logout();
-  } else {
-    loginBtn.textContent = 'Login';
-    signupBtn.textContent = 'Get Started';
-    signupBtn.onclick = () => openModal(true);
-  }
-}
+// Login form submission removed - now handled by Django forms in base.html
+
+// Signup form submission removed - now handled by Django forms in base.html
+
+// Login state is handled by Django templates - no JavaScript needed
 
 // Logout function
 async function logout() {
@@ -432,7 +341,8 @@ async function logout() {
     
     if (response.ok) {
       alert("Logged out successfully!");
-      updateLoginState(false);
+      // Redirect to home page - Django will handle the navbar update
+      window.location.href = '/';
     } else {
       alert("Error logging out");
     }
@@ -475,7 +385,7 @@ if (userTokensEl) {
     }, 100);
 
     const tokensNeeded = Math.max(0, (state.tokensAtLevelStart + state.tokensForNextLevel) - state.tokens);
-    progressLabelEl.textContent = ${tokensNeeded} tokens to next level;
+    progressLabelEl.textContent = `${tokensNeeded} tokens to next level`;
 
     localStorage.setItem('rewardBalance', state.tokens);
   };

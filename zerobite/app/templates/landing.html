@@ -17,8 +17,13 @@
           </p>
 
           <div class="hero-ctas">
-            <a href="#" class="btn primary large">Donate</a>
-            <a href="#" class="btn outline large">Volunteer Pickup</a>
+            {% if user.is_authenticated %}
+              <a href="{% url 'donate' %}" class="btn primary large">Donate</a>
+              <a href="{% url 'volunteer_dashboard' %}" class="btn outline large">Volunteer Pickup</a>
+            {% else %}
+              <button onclick="openLoginModal()" class="btn primary large">Donate</button>
+              <button onclick="openLoginModal()" class="btn outline large">Volunteer Pickup</button>
+            {% endif %}
           </div>
 
           <ul class="kpis">

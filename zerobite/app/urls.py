@@ -18,6 +18,7 @@ urlpatterns = [
     path("analytics/", views.analytics, name="analytics"),
     path("verify/<int:donation_id>/", views.verify_pickup, name="verify_pickup"),
     path('upload_qr/<int:donation_id>/', views.upload_qr, name='upload_qr'),
+    path('api/check-donation-status/<int:donation_id>/', views.check_donation_status, name='check_donation_status'),
     
     path('rewards/', views.rewards, name='rewards'),
 

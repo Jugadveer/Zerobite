@@ -68,7 +68,7 @@
    <div class="user-stats-card">
   <div class="stats-header">
     <div class="header-text">
-      <h2>Welcome back, jugadveer</h2>
+      <h2>Your Rewards</h2>
       <p>Keep making a difference in your community</p>
     </div>
     <div class="stats-icon">
@@ -79,20 +79,34 @@
   </div>
   <div class="stats-content">
     <div class="stat-item">
-      <div class="stat-value" id="user-tokens">100</div>
+      <div class="stat-value" id="user-tokens">{{ tokens }}</div>
       <div class="stat-label">Available Tokens</div>
     </div>
     <div class="stat-item">
-      <div class="stat-value" id="user-level">2</div>
+      <div class="stat-value" id="user-level">{{ level }}</div>
       <div class="stat-label">Current Level</div>
       <div class="progress-container">
-        <div class="progress-bar" id="level-progress-bar"></div>
+        <div class="progress-bar" id="level-progress-bar" style="width: {{ progress_percentage }}%"></div>
       </div>
-      <div class="progress-label" id="progress-label-text">200 tokens to next level</div>
+      <div class="progress-label" id="progress-label-text">{{ tokens_to_next }} tokens to next level</div>
     </div>
     <div class="stat-item">
-      <div class="stat-value" id="user-streak">1🔥</div>
+      <div class="stat-value" id="user-streak">{{ streak }}🔥</div>
       <div class="stat-label">Day Streak</div>
+    </div>
+  </div>
+  
+  <!-- Additional Stats -->
+  <div class="additional-stats">
+    <div class="stat-row">
+      <div class="stat-mini">
+        <div class="mini-value">{{ total_donations }}</div>
+        <div class="mini-label">Donations Made</div>
+      </div>
+      <div class="stat-mini">
+        <div class="mini-value">{{ total_pickups }}</div>
+        <div class="mini-label">Pickups Completed</div>
+      </div>
     </div>
   </div>
 </div>
@@ -195,7 +209,107 @@
 
   </div>
   <script src="{% static 'script.js' %}"></script>
+  <style>
+    /* Additional Stats Styling */
+    .additional-stats {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .stat-row {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+    }
+    
+    .stat-mini {
+      text-align: center;
+      padding: 1rem;
+      background: rgba(0, 153, 87, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 153, 87, 0.1);
+      min-width: 120px;
+    }
+    
+    .mini-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #009957;
+      margin-bottom: 0.25rem;
+    }
+    
+    .mini-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    
+    /* Enhanced Progress Bar */
+    .progress-container {
+      background: #e5e7eb;
+      border-radius: 10px;
+      height: 8px;
+      margin: 0.5rem 0;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #009957, #00C851);
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+    
+    /* Enhanced Stats Card */
+    .user-stats-card {
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border: 2px solid #bbf7d0;
+      box-shadow: 0 10px 25px rgba(0, 153, 87, 0.1);
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #009957, #00C851);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Level up animation */
+    @keyframes levelUp {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .level-up {
+      animation: levelUp 0.6s ease-in-out;
+    }
+  </style>
+
   <script>
+    // Add level up detection and animation
+    document.addEventListener('DOMContentLoaded', function() {
+      const levelElement = document.getElementById('user-level');
+      const tokensElement = document.getElementById('user-tokens');
+      
+      // Check if this is a new level (you could pass this from the backend)
+      const currentLevel = parseInt(levelElement.textContent);
+      const currentTokens = parseInt(tokensElement.textContent);
+      
+      // Add some visual feedback
+      if (currentLevel > 1) {
+        levelElement.classList.add('level-up');
+      }
+      
+      // Add token earning animation
+      if (currentTokens > 0) {
+        tokensElement.style.animation = 'pulse 2s ease-in-out';
+      }
+    });
+    
     (function () { if (!window.chatbase || window.chatbase("getState") !== "initialized") { window.chatbase = (...arguments) => { if (!window.chatbase.q) { window.chatbase.q = [] } window.chatbase.q.push(arguments) }; window.chatbase = new Proxy(window.chatbase, { get(target, prop) { if (prop === "q") { return target.q } return (...args) => target(prop, ...args) } }) } const onLoad = function () { const script = document.createElement("script"); script.src = "https://www.chatbase.co/embed.min.js"; script.id = "dttBjwRx5qXgQhm1c5SpC"; script.domain = "www.chatbase.co"; document.body.appendChild(script) }; if (document.readyState === "complete") { onLoad() } else { window.addEventListener("load", onLoad) } })();
   </script>
   
