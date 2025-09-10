@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Donate - Basix{% endblock %}
+{% block content %}
+
+
+
+    <!-- Hero -->
+    <section class="page-hero">
+      <div class="container">
+        <h1 class="page-title">Donate Food</h1>
+        <p class="page-subtitle">List surplus food so nearby people or NGOs can pick it up.</p>
+      </div>
+    </section>
+
+   <!-- Donation form -->
+<section class="donate-form-section">
+  <div class="container">
+    <form class="donate-form" id="donationForm">
+
+      <!-- Contact Details -->
+      <h2 class="form-section-title">Your Details</h2>
+      <div class="form-row inline">
+        <div>
+          <label for="donorName">Full Name</label>
+          <input type="text" id="donorName" name="donorName" placeholder="Enter your name" required>
+        </div>
+        <div>
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="9876543210" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+
+      <!-- Donation Details -->
+      <h2 class="form-section-title">Donation Details</h2>
+      <div class="form-row">
+        <label for="itemName">Item Name</label>
+        <input type="text" id="itemName" name="itemName" placeholder="e.g. Rice packets" required>
+      </div>
+
+      <div class="form-row">
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+          <option value="">Select category</option>
+          <option value="Cooked Meals">Cooked Meals</option>
+          <option value="Bakery">Bakery</option>
+          <option value="Produce">Produce</option>
+          <option value="Dairy">Dairy</option>
+          <option value="Packaged">Packaged</option>
+        </select>
+      </div>
+
+      <div class="form-row inline">
+        <div>
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity" placeholder="e.g. 20" required>
+        </div>
+        <div>
+          <label for="unit">Unit</label>
+          <select id="unit" name="unit" required>
+            <option value="portions">Portions</option>
+            <option value="kg">kg</option>
+            <option value="loaves">Loaves</option>
+            <option value="litres">Litres</option>
+            <option value="packs">Packs</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="pickupAddress">Pickup Address</label>
+        <textarea id="pickupAddress" name="pickupAddress" placeholder="Enter pickup location" rows="3" required></textarea>
+      </div>
+
+      <div class="form-row inline">
+        <div>
+          <label for="date">Date Available</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <div>
+          <label for="time">Time Available</label>
+          <input type="time" id="time" name="time" required>
+        </div>
+      </div>
+
+      <!-- Upload Images -->
+      <h2 class="form-section-title">Upload Images</h2>
+      <div class="form-row">
+        <label for="foodImage">Food Image</label>
+        <input type="file" id="foodImage" name="foodImage" accept="image/*" required>
+      </div>
+      <div class="form-row">
+        <label for="packagingImage">Packaging Image (optional)</label>
+        <input type="file" id="packagingImage" name="packagingImage" accept="image/*">
+      </div>
+
+      <!-- Notes -->
+      <div class="form-row">
+        <label for="notes">Notes (Optional)</label>
+        <textarea id="notes" name="notes" placeholder="Any extra details (e.g. contains nuts, keep refrigerated)" rows="3"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="reset" class="btn ghost">Cancel</button>
+        <button type="submit" class="btn primary">Submit Donation</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+{% endblock %}

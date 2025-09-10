@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home - Basix{% endblock %}
+{% block content %}
+
+
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% url static/styles.css %}">
+
+
+    <!-- Page hero -->
+    <section class="page-hero">
+      <div class="container">
+        <h1 class="page-title">Available Pickups</h1>
+        <p class="page-subtitle">Reserve nearby donations and help redistribute surplus food.</p>
+      </div>
+    </section>
+
+    <!-- Filters/Search -->
+    <section class="filters-wrap">
+      <div class="container">
+        <div class="filters-bar">
+          <div class="filter search">
+            <input type="text" id="searchInput" placeholder="Search items, e.g. bread, rice..." aria-label="Search">
+          </div>
+
+          <div class="filter">
+            <label class="filter-label" for="category">Category</label>
+            <select id="category">
+              <option value="">All</option>
+              <option value="Cooked Meals">Cooked Meals</option>
+              <option value="Bakery">Bakery</option>
+              <option value="Produce">Produce</option>
+              <option value="Dairy">Dairy</option>
+            </select>
+          </div>
+
+          <div class="filter check">
+            <label class="checkbox"><input type="checkbox" id="vegOnly"> Veg only</label>
+          </div>
+
+          <div class="filter">
+            <label class="filter-label" for="sort">Sort by</label>
+            <select id="sort">
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Donations Cards -->
+    <section class="donations-cards">
+      <div class="container cards-grid" id="donations-container">
+        <p>Loading donations...</p>
+      </div>
+    </section>
+
+   
+  </div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("donations-container");
+
+    function loadDonations() {
+      fetch("/api/donations/")
+        .then((response) => response.json())
+        .then((data) => {
+          container.innerHTML = ""; // clear previous
+          if (data.donations.length === 0) {
+            container.innerHTML = "<p>No donations available right now.</p>";
+            return;
+          }
+
+          data.donations.forEach((donation) => {
+            const card = document.createElement("article");
+            card.classList.add("donation-card");
+
+            card.innerHTML = `
+              <div class="card-left">
+                <img class="thumb" src="${donation.food_image || '/static/default-food.jpg'}" alt="${donation.item_name}">
+              </div>
+              <div class="card-mid">
+                <div class="title-row">
+                  <h3 class="item-title">${donation.item_name}</h3>
+                  <span class="tag">${donation.food_type}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta">📍 ${donation.pickup_location}</span>
+                  <span class="meta">🕒 ${donation.date_available || ''} ${donation.time_available || ''}</span>
+                </div>
+                <div class="facts-row">
+                  <span class="fact">📦 ${donation.quantity} ${donation.unit}</span>
+                  <span class="fact">👤 Donor: ${donation.donor_name}</span>
+                </div>
+              </div>
+              <div class="card-right">
+                <button 
+                  class="btn primary pickup-btn" 
+                  data-url="/pickup/${donation.id}/">
+                  Pick up
+                </button>
+                <button class="btn ghost details-btn">Details</button>
+                <div class="expires">Listed on: ${new Date(donation.created_at).toLocaleDateString()}</div>
+              </div>
+            `;
+
+            container.appendChild(card);
+          });
+        })
+        .catch((err) => {
+          console.error("Error loading donations:", err);
+          container.innerHTML = "<p>Failed to load donations.</p>";
+        });
+    }
+
+    loadDonations();
+  });
+
+  // Handle pickup button clicks
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("pickup-btn")) {
+      const url = e.target.dataset.url; // use data-url instead of hardcoding
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",  // works because it's inside template
+          "Content-Type": "application/json",
+        },
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert("Donation reserved for you!");
+          window.location.href = "/volunteer/"; // Go to dashboard
+        } else {
+          alert(data.error || "Failed to reserve donation.");
+        }
+      })
+      .catch(err => {
+        console.error("Error reserving donation:", err);
+        alert("Something went wrong.");
+      });
+    }
+  });
+</script>
+
+
+
+{% endblock %}
