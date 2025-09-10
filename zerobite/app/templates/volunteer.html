@@ -1,0 +1,456 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home - Basix{% endblock %}
+{% block content %}
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+
+    /* Scanner (Volunteer Page) */
+    .scanner-section {
+      padding-top: 12px;
+      padding-bottom: 80px;
+    }
+    .scanner-section .container {
+      max-width: 500px;
+      text-align: center;
+      margin: 0 auto;
+    }
+    .scanner-placeholder {
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted, #666);
+    }
+    .camera-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      color: #ccc;
+    }
+    .scanner-box {
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      height: 300px; /* fixed height */
+      margin-top: 16px;
+    }
+    /* QR scanner feed */
+    #preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #preview video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .scan-result {
+      margin: 16px 0;
+      font-weight: 500;
+    }
+    .hidden {
+      display: none;
+    }
+    .form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .scanner-section .btn {
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .scanner-section .btn.primary {
+      background: #009957;
+      color: #fff;
+    }
+    .scanner-section .btn.primary:hover {
+      background: #009957;
+    }
+    .scanner-section .btn.ghost {
+      background: #f1f5f9;
+      color: #111;
+    }
+    .scanner-section .btn.ghost:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+    /* 📱 Mobile tweaks */
+    @media (max-width: 480px) {
+      .scanner-placeholder {
+        padding: 24px;
+      }
+      .camera-icon {
+        width: 64px;
+        height: 64px;
+      }
+      .scanner-box {
+        height: 220px;
+      }
+      .scanner-section .btn {
+        width: 100%;
+      }
+    }
+    /* Donation Cards */
+    .donations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .donation-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .card-image {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    .donation-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .status-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: white;
+    }
+    .status-reserved { background-color: #f59e0b; }
+    .status-approved { background-color: #10b981; }
+    .status-completed { background-color: #3b82f6; }
+    .card-content {
+      padding: 1.25rem;
+    }
+    .donation-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+      color: #1f2937;
+    }
+    .donation-notes {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+    .donation-details {
+      margin-bottom: 1rem;
+    }
+    .detail-item {
+      font-size: 0.875rem;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+    .qr-form-container {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .file-input {
+      margin-bottom: 0.5rem;
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+    }
+    .result-message {
+      margin-top: 0.5rem;
+      color: #374151;
+    }
+    .completed-status {
+      margin-top: 1rem;
+      color: #3b82f6;
+      font-weight: 600;
+      text-align: center;
+    }
+    .no-donations {
+      color: #6b7280;
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 2rem;
+    }
+  </style>
+
+  <div class="page">
+    <div class="container">
+      <h1 class="page-title">Welcome, <span class="text-green-600">{{ request.user.username }}</span></h1>
+
+      <!-- Scanner Section -->
+      <section class="scanner-section">
+        <div class="container">
+          <div id="scannerPlaceholder" class="scanner-placeholder">
+            <!-- Camera Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="camera-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h2l2-3h10l2 3h2a2 2 0 012 2v9a2 2 0 01-2 2H3a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <p>Ready to scan a code</p>
+          </div>
+          <div id="scannerBox" class="scanner-box hidden">
+            <div id="preview"></div>
+          </div>
+          <p id="scanResult" class="scan-result">Waiting for scan...</p>
+          <div class="form-actions">
+            <button id="startBtn" class="btn primary">Start Scanning</button>
+            <button id="confirmBtn" class="btn ghost" disabled>Confirm Pickup</button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">My Assigned Donations</h2>
+        <div class="donations-grid">
+          {% for donation in assigned_donations %}
+          <div class="donation-card">
+            <div class="card-image">
+              {% if donation.food_image %}
+                <img src="{{ donation.food_image.url }}" alt="{{ donation.item_name }}" class="donation-image">
+              {% else %}
+                <img src="https://via.placeholder.com/300x200" class="donation-image">
+              {% endif %}
+              <span class="status-badge status-{{ donation.status }}">
+                {{ donation.get_status_display }}
+              </span>
+            </div>
+            <div class="card-content">
+              <h3 class="donation-title">{{ donation.item_name }}</h3>
+              <p class="donation-notes">{{ donation.notes|default:"No additional notes" }}</p>
+              <div class="donation-details">
+                <p class="detail-item">📍 {{ donation.pickup_location }}</p>
+                <p class="detail-item">⏰ {{ donation.time_available }}</p>
+              </div>
+              {% if donation.status == 'reserved' %}
+              <div class="qr-form-container">
+                <form id="qrForm-{{ donation.id }}" enctype="multipart/form-data">
+                  <input type="file" name="qr_image" accept="image/*" required class="file-input">
+                  <button type="submit" class="btn primary">
+                    Verify QR & Complete Pickup
+                  </button>
+                </form>
+                <p id="result-{{ donation.id }}" class="result-message"></p>
+              </div>
+              {% elif donation.status == 'completed' %}
+                <p class="completed-status">✅ Completed</p>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+            <p class="no-donations">You have no assigned donations.</p>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    {% for donation in assigned_donations %}
+    document.getElementById('qrForm-{{ donation.id }}').addEventListener('submit', function(e){
+      e.preventDefault();
+      let formData = new FormData(this);
+      const resultEl = document.getElementById('result-{{ donation.id }}');
+      fetch('/upload_qr/{{ donation.id }}/', {
+        method: 'POST',
+        headers: {"X-CSRFToken": "{{ csrf_token }}"},
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.success){
+          resultEl.textContent = data.message;
+          setTimeout(() => location.reload(), 1000);  // reload to show completed status
+        } else {
+          resultEl.textContent = data.error;
+        }
+      })
+      .catch(err => {
+        resultEl.textContent = "❌ Error uploading QR image.";
+        console.error(err);
+      });
+    });
+    {% endfor %}
+  </script>
+
+  <!-- Load Html5Qrcode library with fallback -->
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script>
+    // Fallback loading if CDN fails
+    if (typeof Html5Qrcode === 'undefined') {
+      console.log('Primary CDN failed, trying fallback...');
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+      script.onload = initializeScanner;
+      script.onerror = () => {
+        console.error('All CDN sources failed to load Html5Qrcode');
+        document.getElementById('scanResult').textContent = '❌ QR Scanner library failed to load. Please check your internet connection.';
+      };
+      document.head.appendChild(script);
+    } else {
+      // Library already loaded
+      document.addEventListener("DOMContentLoaded", initializeScanner);
+    }
+
+    function initializeScanner() {
+      document.addEventListener("DOMContentLoaded", function() {
+        const startBtn = document.getElementById("startBtn");
+        const confirmBtn = document.getElementById("confirmBtn");
+        const scanResult = document.getElementById("scanResult");
+        const placeholder = document.getElementById("scannerPlaceholder");
+        const scannerBox = document.getElementById("scannerBox");
+        let html5QrCode;
+        let isScanning = false;
+
+        // Check if library is available
+        if (typeof Html5Qrcode === 'undefined') {
+          console.error('Html5Qrcode library not loaded.');
+          scanResult.textContent = '❌ QR Scanner library failed to load';
+          return;
+        }
+
+        try {
+          html5QrCode = new Html5Qrcode("preview");
+          console.log('Html5Qrcode initialized successfully');
+        } catch (error) {
+          console.error('Failed to initialize Html5Qrcode:', error);
+          scanResult.textContent = '❌ Failed to initialize QR scanner';
+          return;
+        }
+
+        // Event listeners
+        if (startBtn) {
+          startBtn.addEventListener("click", () => {
+            if (!isScanning) {
+              startScanning();
+            } else {
+              stopScanning();
+            }
+          });
+        }
+
+        if (confirmBtn) {
+          confirmBtn.addEventListener("click", () => {
+            alert("Pickup confirmed! 🚚");
+            // Add confirmation logic here
+          });
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', stopScanning);
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            stopScanning();
+          }
+        });
+
+        function startScanning() {
+          console.log("Starting scanner...");
+          
+          // Update UI
+          placeholder.classList.add("hidden");
+          scannerBox.classList.remove("hidden");
+          scanResult.textContent = "Requesting camera access...";
+          if (confirmBtn) confirmBtn.disabled = true;
+
+          // Request camera access and start scanning
+          html5QrCode.start(
+            { facingMode: "environment" }, // Use back camera
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 }, // Smaller scanning area
+              aspectRatio: 1.0
+            },
+            (qrCodeMessage) => {
+              // QR Code detected successfully
+              console.log("QR Code detected:", qrCodeMessage);
+              scanResult.textContent = `✅ Code scanned: ${qrCodeMessage}`;
+              if (confirmBtn) confirmBtn.disabled = false;
+              
+              // Stop scanning after successful detection
+              stopScanning();
+            },
+            (errorMessage) => {
+              // This runs continuously when no QR code is detected
+              // We can ignore most errors, but log significant ones
+              if (errorMessage.includes('NotFoundException')) {
+                // This is normal - no QR code in view
+                return;
+              }
+              console.log("Scanning...", errorMessage);
+            }
+          ).then(() => {
+            // Camera started successfully
+            isScanning = true;
+            startBtn.textContent = "Stop Scanning";
+            scanResult.textContent = "Point camera at QR code...";
+            console.log("Camera started successfully");
+          }).catch(err => {
+            // Camera start failed
+            console.error("Camera start failed:", err);
+            
+            let errorMessage = "❌ Camera error: ";
+            if (err.name === 'NotAllowedError') {
+              errorMessage += "Camera access denied. Please allow camera access and try again.";
+            } else if (err.name === 'NotFoundError') {
+              errorMessage += "No camera found. Please connect a camera and try again.";
+            } else if (err.name === 'NotSupportedError') {
+              errorMessage += "Camera not supported. Please use a different browser or device.";
+            } else {
+              errorMessage += err.message || "Unknown error occurred";
+            }
+            
+            scanResult.textContent = errorMessage;
+            resetUI();
+          });
+        }
+
+        function stopScanning() {
+          console.log("Stopping scanner...");
+          
+          if (html5QrCode && isScanning) {
+            html5QrCode.stop().then(() => {
+              console.log("Scanner stopped successfully");
+              resetUI();
+            }).catch(err => {
+              console.error("Failed to stop scanning", err);
+              // Force reset even if stop fails
+              resetUI();
+            });
+          } else {
+            resetUI();
+          }
+        }
+
+        function resetUI() {
+          isScanning = false;
+          if (startBtn) startBtn.textContent = "Start Scanning";
+          scannerBox.classList.add("hidden");
+          placeholder.classList.remove("hidden");
+          scanResult.textContent = "Waiting for scan...";
+          if (confirmBtn) confirmBtn.disabled = true;
+        }
+      });
+    }
+  </script>
+{% endblock %}

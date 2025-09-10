@@ -9,13 +9,15 @@
   <script src="https://unpkg.com/alpinejs" defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/styles.css">
-    <script src="{% static 'scripts.js'%}"></script>
-  <script src="{% static 'index.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <script src="{% static 'script.js' %}"></script>
+  
   <style>
     /* --- Existing Navbar CSS (no changes) --- */
     :root {
@@ -31,8 +33,8 @@
       font-family: 'Poppins', sans-serif;
       margin: 0;
       background: var(--bg);
-      /* Add some content to enable scrolling and see the effects */
-      min-height: 200vh; 
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
     
@@ -229,11 +231,6 @@
       --nav-height: 70px;
     }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background: var(--bg);
-    }
 
     /* Navbar */
  .navbar {
@@ -440,6 +437,51 @@
       .navbar { height: 56px; padding: 0 16px; }
     }
 
+    /* Top Actions */
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .welcome-user {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 600;
+      color: #374151;
+      background-color: transparent;
+      border: none;
+      cursor: default;
+      user-select: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      margin-right: 8px;
+      padding: 0;
+    }
+
+    .top-actions .btn.ghost {
+      background-color: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .top-actions .btn.ghost:hover {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .top-actions form .btn.ghost {
+      background-color: #dc2626;
+      color: white;
+      border: 1px solid #dc2626;
+    }
+
+    .top-actions form .btn.ghost:hover {
+      background-color: #b91c1c;
+      border-color: #b91c1c;
+    }
+
+
 
   </style>
 </head>
@@ -469,7 +511,8 @@
 
   <!-- Center -->
   <div class="navbar-center">
-    <a href="#" class="nav-link active">
+    {% if not user.is_authenticated %}
+    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
       <span class="nav-icon">
         <!-- Home -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -478,7 +521,8 @@
       </span>
       Home
     </a>
-    <a href="#" class="nav-link">
+    {% endif %}
+    <a href="{% url 'donation' %}" class="nav-link {% if request.resolver_match.url_name == 'donation' %}active{% endif %}">
       <span class="nav-icon">
         <!-- Donations (Map Pin) -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -488,7 +532,7 @@
       </span>
       Donations
     </a>
-    <a href="#" class="nav-link">
+    <a href="{% url 'donate' %}" class="nav-link {% if request.resolver_match.url_name == 'donate' and user.is_authenticated %}active{% endif %}">
       <span class="nav-icon">
         <!-- Donate (Heart) -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" 
@@ -499,7 +543,7 @@
       </span>
       Donate
     </a>
-    <a href="#" class="nav-link">
+    <a href="{% url 'volunteer_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'volunteer_dashboard' and user.is_authenticated %}active{% endif %}">
       <span class="nav-icon">
         <!-- Volunteer (QR Scanner) -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -512,7 +556,7 @@
       </span>
       Volunteer
     </a>
-    <a href="#" class="nav-link">
+    <a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
       <span class="nav-icon">
         <!-- Analytics (Bar Chart) -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -523,7 +567,19 @@
       </span>
       Analytics
     </a>
-    <a href="#" class="nav-link">
+    {% if user.is_authenticated %}
+    <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <span class="nav-icon">
+        <!-- Dashboard (Chart) -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 3v18h18V3H3zm16 16H5V5h14v14z"/>
+          <path d="M7 7h4v4H7V7zm6 0h4v4h-4V7zm-6 6h4v4H7v-4zm6 0h4v4h-4v-4z"/>
+        </svg>
+      </span>
+      Dashboard
+    </a>
+    {% endif %}
+    <a href="{% url 'rewards' %}" class="nav-link {% if request.resolver_match.url_name == 'rewards' %}active{% endif %}">
       <span class="nav-icon">
         <!-- Rewards (Gift) -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" 
@@ -537,30 +593,33 @@
     </a>
   </div>
 
-    <div>
+    <div class="top-actions">
       {% if user.is_authenticated %}
-  <span class="mr-4 text-gray-700">
-    Welcome, <strong>{{ user.username }}</strong>
-  </span>
-  <form method="POST" action="{% url 'logout' %}" class="inline">
-    {% csrf_token %}
-    <button type="submit"
-            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition">
-      Logout
-    </button>
-  </form>
-{% else %}
-  <button onclick="openModal('loginModal')" 
-          class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl transition mr-2">
-    Login
-  </button>
-  <button onclick="openModal('signupModal')" 
-          class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-xl transition">
-    Sign Up
-  </button>
-{% endif %}
-
+        <span class="welcome-user">
+          Welcome, {{ user.username }}
+        </span>
+        <form method="POST" action="{% url 'logout' %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="btn ghost">
+            Logout
+          </button>
+        </form>
+      {% else %}
+        <button onclick="openLoginModal()" class="btn ghost">
+          Login
+        </button>
+        <button onclick="openSignupModal()" class="btn primary">
+          Get Started
+        </button>
+      {% endif %}
     </div>
+    
+    <!-- Debug info -->
+    <script>
+      console.log('User authenticated:', {{ user.is_authenticated|yesno:"true,false" }});
+      console.log('Username:', '{{ user.username }}');
+    </script>
+    
   
 
   <!-- Toggle -->
@@ -589,6 +648,7 @@
  
   <!-- MAIN CONTENT -->
  <main class="flex-grow" >
+    
     {% block content %}
     <!-- Page-specific content goes here -->
     {% endblock %}
@@ -706,53 +766,7 @@
   });
 </script>
 
-
-<!-- ENHANCED LOGIN MODAL -->
-<div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden z-50 transition-opacity duration-500 ease-in-out opacity-0">
-  <div class="bg-white rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 transition-transform duration-500 ease-in-out">
-    <!-- Close Button -->
-    <button onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-3xl">&times;</button>
-
-    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Welcome Back</h2>
-{% if messages %}
-  <div >
-    {% for message in messages %}
-      <div class="px-4 py-2 rounded-xl shadow-md 
-                  {% if message.tags == 'error' %} bg-red-500 text-white
-                  {% elif message.tags == 'success' %} bg-green-500 text-white
-                  {% else %} bg-gray-700 text-white {% endif %}">
-        {{ message }}
-      </div>
-    {% endfor %}
-  </div>
-{% endif %}
-
-    <!-- Login Form -->
-    <form method="POST" action="{% url 'login' %}" class="space-y-5">
-  {% csrf_token %}
-  <div class="relative">
-    <input type="text" name="username" placeholder="Username" required
-           class="w-full px-4 py-3 pl-12 border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 transition duration-300" />
-    <i class="bi bi-person absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-  </div>
-
-  <div class="relative">
-    <input type="password" name="password" placeholder="********" required
-           class="w-full px-4 py-3 pl-12 border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 transition duration-300" />
-    <i class="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-  </div>
-
-  <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-emerald-800 transition transform active:scale-95">Login</button>
-</form>
-
-
-
-    <p class="text-sm text-gray-600 mt-5 text-center">
-      Don't have an account? 
-      <button onclick="openModal('signupModal'); closeModal('loginModal')" class="text-emerald-600 font-medium hover:underline">Sign Up</button>
-    </p>
-  </div>
-</div>
+<!--  -->
 <!-- ENHANCED SIGNUP MODAL -->
 <div id="signupModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden z-50 transition-opacity duration-500 ease-in-out opacity-0">
   <div class="bg-white rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 transition-transform duration-500 ease-in-out">
@@ -828,19 +842,7 @@
 
 <!-- MODAL SCRIPTS -->
 <script>
-function openModal(id){
-  const modal = document.getElementById(id);
-  modal.classList.remove('hidden');
-  setTimeout(()=> modal.classList.remove('opacity-0'), 10); // smooth fade in
-  modal.querySelector('div').classList.add('scale-100');
-}
-
-function closeModal(id){
-  const modal = document.getElementById(id);
-  modal.classList.add('opacity-0'); // fade out
-  modal.querySelector('div').classList.remove('scale-100');
-  setTimeout(()=> modal.classList.add('hidden'), 300);
-}
+// Duplicate functions removed
 
 function togglePassword(id){
   const input = document.getElementById(id);
@@ -848,6 +850,91 @@ function togglePassword(id){
 }
 </script>
 
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+    <div class="modal-tabs">
+      <button class="tab-link active" onclick="switchTab('login')">Login</button>
+      <button class="tab-link" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+    <div class="modal-content">
+      <form class="form active" id="loginForm" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn primary full">Login</button>
+      </form>
+      <form class="form" id="signupForm" method="post" action="{% url 'signup' %}">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="tel" name="phone" placeholder="Phone" required>
+        <input type="password" name="password1" placeholder="Password" required>
+        <input type="password" name="password2" placeholder="Confirm Password" required>
+        <button type="submit" class="btn primary full">Sign Up</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// Modal functions
+function openLoginModal() {
+  const modal = document.getElementById('loginModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+  }
+}
+
+function openSignupModal() {
+  const modal = document.getElementById('loginModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    switchTab('signup');
+  }
+}
+
+function closeLoginModal() {
+  const modal = document.getElementById('loginModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+}
+
+
+function switchTab(tab) {
+  // Remove active class from all tabs and forms
+  document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+  
+  // Add active class to selected tab and form
+  event.target.classList.add('active');
+  document.getElementById(tab + 'Form').classList.add('active');
+}
+
+// Close modal when clicking outside
+document.getElementById('loginModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeLoginModal();
+  }
+});
+
+// Show modal if needed
+{% if show_login_modal %}
+document.addEventListener('DOMContentLoaded', function() {
+  openLoginModal();
+});
+{% endif %}
+
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

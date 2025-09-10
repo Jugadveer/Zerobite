@@ -5,9 +5,16 @@ from django.core.validators import MinValueValidator
 from django.conf import settings
 from datetime import datetime
 from io import BytesIO
-import qrcode
 from django.core.files import File
 from django.urls import reverse
+import qrcode
+
+# Check if qrcode is available
+try:
+    import qrcode
+    QRCODE_AVAILABLE = True
+except ImportError:
+    QRCODE_AVAILABLE = False
 
 
 # Custom User model
@@ -76,6 +83,10 @@ class Donation(models.Model):
 
     def generate_qr(self, request=None):
         """Generate and save QR code for verification."""
+        if not QRCODE_AVAILABLE:
+            # If qrcode is not available, skip QR generation
+            return
+            
         if request:
             verify_url = request.build_absolute_uri(
                 reverse("verify_donation", args=[self.id])
@@ -94,7 +105,7 @@ class Donation(models.Model):
         """Override save to auto-generate QR if missing."""
         super().save(*args, **kwargs)
 
-        if not self.qr_code:
+        if not self.qr_code and QRCODE_AVAILABLE:
             self.generate_qr()
             super().save(update_fields=["qr_code"])
 

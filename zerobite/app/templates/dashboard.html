@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard - Basix{% endblock %}
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+
+<div class="page">
+  <!-- Welcome Section -->
+  <section class="dashboard-welcome">
+    <div class="container">
+      <h2 class="page-title">
+        Welcome, <span class="text-green-600">{{ request.user.username }}</span>
+      </h2>
+      <p class="page-subtitle">
+        Your donation dashboard – track your food donations and help reduce waste
+      </p>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3 class="stat-label">Total Donations</h3>
+          <p class="stat-number">{{ total }}</p>
+        </div>
+        <div class="stat-card">
+          <h3 class="stat-label">Active Donations</h3>
+          <p class="stat-number">{{ active }}</p>
+        </div>
+        <div class="stat-card">
+          <h3 class="stat-label">Successful Pickups</h3>
+          <p class="stat-number">{{ completed }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- My Donations -->
+  <section class="my-donations">
+    <div class="container">
+      <h2 class="section-title">My Donations</h2>
+      <div class="donations-grid">
+        {% for donation in donations %}
+        <div class="donation-card">
+          <div class="card-image">
+            {% if donation.food_image %}
+              <img src="{{ donation.food_image.url }}" alt="{{ donation.item_name }}" class="donation-image">
+            {% else %}
+              <img src="https://via.placeholder.com/300x200" class="donation-image">
+            {% endif %}
+            <span class="status-badge status-{{ donation.status }}">
+              {{ donation.get_status_display }}
+            </span>
+          </div>
+          <div class="card-content">
+            <h3 class="donation-title">{{ donation.item_name }}</h3>
+            <p class="donation-notes">
+              {{ donation.notes|default:"No additional notes" }}
+            </p>
+            <div class="donation-details">
+              <p class="detail-item">📍 {{ donation.pickup_location }}</p>
+              <p class="detail-item">⏰ {{ donation.time_available }}</p>
+              <p class="detail-date">Posted on {{ donation.created_at|date:"M d, Y" }}</p>
+            </div>
+            <!-- QR Code Button -->
+            {% if donation.qr_code %}
+            <div class="qr-button-container">
+              <button onclick="openModal('{{ donation.qr_code.url }}')" class="btn primary">
+                View QR
+              </button>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <p class="no-donations">You haven't listed any donations yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- QR Modal -->
+  <div id="qrModal" class="modal-overlay">
+    <div class="modal-box">
+      <button onclick="closeModal()" class="modal-close">&times;</button>
+      <h3 class="modal-title">Pickup QR Code</h3>
+      <p class="modal-subtitle">Show this code for verification</p>
+      <img id="qrImage" src="" alt="QR Code" class="qr-image">
+      <button onclick="closeModal()" class="btn primary">Close</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.dashboard-welcome {
+  background: #f8fafc;
+  padding: 2rem 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0;
+}
+
+.my-donations {
+  padding: 2rem 0;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.donations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.donation-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.donation-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+}
+
+.status-pending { background-color: #f59e0b; }
+.status-approved { background-color: #10b981; }
+.status-completed { background-color: #3b82f6; }
+.status-reserved { background-color: #6b7280; }
+
+.card-content {
+  padding: 1.25rem;
+}
+
+.donation-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.donation-notes {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.donation-details {
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.detail-date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.qr-button-container {
+  text-align: center;
+}
+
+.no-donations {
+  color: #6b7280;
+  text-align: center;
+  grid-column: 1 / -1;
+  padding: 2rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-box {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  max-width: 24rem;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #10b981;
+  margin-bottom: 0.5rem;
+}
+
+.modal-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.qr-image {
+  width: 10rem;
+  height: 10rem;
+  margin: 0 auto 1.25rem;
+  display: block;
+}
+</style>
+
+<script>
+function openModal(qrUrl) {
+  document.getElementById('qrImage').src = qrUrl;
+  document.getElementById('qrModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('qrModal').style.display = 'none';
+}
+</script>
+{% endblock %}

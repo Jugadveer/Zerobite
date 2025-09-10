@@ -38,29 +38,19 @@
         </div>
 
         <div class="hero-right">
-          <!-- Replace with actual illustration/screenshot -->
-          <div class="mock-phone">
-            <div class="mock-phone">
-              <div id="mockPhoneCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
-                data-bs-interval="3000">
-                <div class="carousel-inner">
-                  <div class="carousel-item active">
-                    <img src="{% static 'assets/img1.jpg' %}" class="d-block w-100" alt="Slide 1" />
-                  </div>
-                  <div class="carousel-item">
-                    <img src="{% static 'assets/img2.jpg' %}" class="d-block w-100" alt="Slide 2" />
-                  </div>
-                  <div class="carousel-item">
-                    <img src="{% static 'assets/img2.jpg' %}" class="d-block w-100" alt="Slide 3" />
-                  </div>
-                  <div class="carousel-item">
-                    <img src="{% static 'assets/img3.jpg' %}" class="d-block w-100" alt="Slide 4" />
-                  </div>
-                  <div class="carousel-item">
-                    <img src="{% static 'assets/img4.jpg' %}" class="d-block w-100" alt="Slide 5" />
-                  </div>
-                </div>
-              </div>
+          <!-- Image slides/cards display -->
+          <div class="image-slides">
+            <div class="slide active">
+              <img src="{% static 'assets/img1.jpg' %}" alt="Food distribution" />
+            </div>
+            <div class="slide">
+              <img src="{% static 'assets/img2.jpg' %}" alt="Fresh bread" />
+            </div>
+            <div class="slide">
+              <img src="{% static 'assets/img3.jpg' %}" alt="Community meal" />
+            </div>
+            <div class="slide">
+              <img src="{% static 'assets/img4.jpg' %}" alt="Volunteer work" />
             </div>
           </div>
         </div>
@@ -102,18 +92,8 @@
       </div>
     </section>
 
-    <!-- footer -->
-    <footer class="site-footer">
-      <div class="container footer-grid">
-        <div>© 2025 ZeroBite</div>
-        <div class="footer-links">
-          <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a>
-        </div>
-      </div>
-    </footer>
-
+    <script src="{% static 'index.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     AOS.init({
       duration: 1000,
@@ -124,13 +104,107 @@
     window.addEventListener('load', () => {
       AOS.refresh();
     });
+    
+    // Image slides functionality
+    let currentSlideIndex = 1;
+    const slides = document.querySelectorAll('.slide');
+    
+    function showSlide(n) {
+      // Hide all slides
+      slides.forEach(slide => slide.classList.remove('active'));
+      
+      // Show current slide
+      if (n > slides.length) currentSlideIndex = 1;
+      if (n < 1) currentSlideIndex = slides.length;
+      
+      slides[currentSlideIndex - 1].classList.add('active');
+    }
+    
+    // Auto-advance slides every 3 seconds
+    setInterval(() => {
+      currentSlideIndex++;
+      if (currentSlideIndex > slides.length) currentSlideIndex = 1;
+      showSlide(currentSlideIndex);
+    }, 3000);
+    
+    // Initialize first slide
+    showSlide(1);
   </script>
-<script>
-(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="dttBjwRx5qXgQhm1c5SpC";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-</script>
-
-
-
-
+  
+  <style>
+    /* Image slides styling */
+    .image-slides {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 500px; /* Much bigger vertically */
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    
+    .slide.active {
+      opacity: 1;
+    }
+    
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+    
+    
+    /* Ensure hero section displays properly */
+    .hero {
+      min-height: 500px;
+      display: flex;
+      align-items: center;
+      padding: 80px 0;
+    }
+    
+    .hero-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    
+    .hero-left {
+      flex: 1;
+    }
+    
+    .hero-right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .image-slides {
+        max-width: 400px;
+        height: 400px; /* Keep bigger size on mobile too */
+      }
+    }
+  </style>
 
 {% endblock %}
